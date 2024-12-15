@@ -1,16 +1,16 @@
-import FooterAdmin from "./Footer";
-import HeaderAdmin from "./Header";
+import React from 'react';
 
-function Adminlayout({children}) {
-    return ( 
-        <div>
-            <HeaderAdmin/>
-            <div>
-                {children}
-            </div>
-            <FooterAdmin/>
-        </div>
-     );
-}
+const AdminLayout = ({ children }) => {
+  return (
+    <div>
+      <header className="bg-gray-800 text-white p-4">
+        <div className="text-2xl font-bold"></div>
+      </header>
+      <main>{children}</main>
+      <footer className="bg-gray-800 text-white p-4 text-center">
+      </footer>
+    </div>
+  );
+};
 
-export default Adminlayout;
+export default AdminLayout;

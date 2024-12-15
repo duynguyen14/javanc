@@ -1,7 +1,7 @@
 function FooterAdmin() {
     return ( 
         <div>
-            FooterAdmin
+            
         </div>
      );
 }

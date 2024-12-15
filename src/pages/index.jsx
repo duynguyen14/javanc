@@ -17,9 +17,10 @@ const PublicPage=[
     // {path:"/",component: Home, layout: Defautlayout},
     {path:"/admin/home", component: AdminHome, layout: Adminlayout},
     {path:"/admin/product", component: ManaProduct, layout: Adminlayout},
+    {path:"/admin/home", component: AdminHome, layout: Adminlayout},
 ]
 const PrivatePage=[
-    {path:"/admin/home", component: AdminHome, layout: Adminlayout},
+    
     {path:"/admin/product", component: ManaProduct, layout: Adminlayout},
 ]
 export{PublicPage,PrivatePage}
