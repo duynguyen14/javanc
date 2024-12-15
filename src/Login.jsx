@@ -19,36 +19,32 @@ function Login() {
 //   const navigate=useNavigate();
   // console.log(user)
   const handleOnclick= async()=>{
-    // e.preventDefault();
-    // if(user.email==""|| user.password==""){
-    //   alert("Vui lòng điền đầy đủ thông tin đăng nhập")
-    //   return;
-    // }
-    // try{
-    //   const response = await request2.get(`user/?password=${user.password}&username=${user.email}`)
-    //   if(response.status==200){
-    //     alert("Đăng nhập thành công")
-    //     localStorage.setItem("user",response.data.user);
+    e.preventDefault();
+    if(user.email==""|| user.password==""){
+      alert("Vui lòng điền đầy đủ thông tin đăng nhập")
+      return;
+    }
+    try{
+      const response = await axios.post("http://localhost:8080/api/user/login",{
+        email:user.email,
+        password:user.password
+      })
+      console.log(response)
+      if(response.status==200){
+        alert("Đăng nhập thành công")
+        localStorage.setItem("user",response.data.user);
 
-    //   }
-    //   else if(response.status==400){
-    //     setShowmessage(true)
-    //   }
-    //   else{
-    //     alert("Có lỗi xảy ra vui lòng thử lại")
-    //   }
-    // }
-    // catch(error){
-    //   console.log(error)
-    // }
-    try {
-        const res = await axios.get(`http://localhost:8081/api/user/?password=${user.password}&username=${user.email}`)
-      const data = res.data;
-      console.log("demo",data);
-      
-  } catch (error) {
-      console.log(error);
-  }
+      }
+      else if(response.status==400){
+        setShowmessage(true)
+      }
+      else{
+        alert("Có lỗi xảy ra vui lòng thử lại")
+      }
+    }
+    catch(error){
+      console.log(error)
+    }
   }
   return (
       <div className="container h-full py-10">

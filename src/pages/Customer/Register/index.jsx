@@ -1,27 +1,129 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Register() {
+  const navigate=useNavigate();
   const [user,setUser]=useState({
     name:"",
     email:"",
     password:"",
     confirmpassword:""
   });
+  const [showpassword,setShowPassword]=useState(false);
+  const [showconfirnpassword,setShowconfirnPassword]=useState(false);
+  const [nameerror,setNameerror]=useState("");
+  const [passworderror,setPassworderror]=useState("");
+  const [confirnpassworderror,setconfirnPassworderror]=useState("");
+  const [emailerror,setEmailerror]=useState("");
   const handleOnchangeInput=(e)=>{
     const {name,value}=e.target;
     setUser({
         ...user,
         [name]:value
     })
+    checkInput(name,value);
   }
+  let checkemail=/\w+@[a-zA-Z]\w+\.com$/;
+    let validate=true;
+    const checkInput = (name,value) => {
+        switch(name){
+            case "name":
+                if(value===""){
+                    setNameerror("Tên đăng nhập không được để trống");
+                    validate=false;
+                }
+                else if(value.length<5){
+                    setNameerror("Tên đăng nhập phải có từ 5 kí tự trở lên");
+                    validate=false;
+                }
+                else{
+                    setNameerror("");
+                }
+            break;
+            case "password":
+                if(value===""){
+                    setPassworderror("Mật khẩu không được để trống")
+                    validate=false;
+                }
+                else if(value.length<8){
+                    setPassworderror("Mật khẩu phải có ít nhất 8 kí tự")
+                    validate=false;
+                }
+                else{
+                    setPassworderror("")
+                }
+            break;
+            case "confirmpassword":
+                if(value===""){
+                    setconfirnPassworderror("Xác nhận mật khẩu không được để trống")
+                    validate=false;
+                }
+                else if(value!==user.password){
+                    setconfirnPassworderror("Xác nhận mật khẩu phải giống mật khẩu")
+                    validate=false;
+                }
+                else {
+                    setconfirnPassworderror("")
+                }
+            break;
+            case "email":
+                if(value===""){
+                    setEmailerror("Email không được để trống");
+                    validate=false;
+                }
+                else if(!checkemail.test(value)){
+                    setEmailerror("Email không đúng định dạng");
+                    validate=false;
+                }
+                else{
+                    setEmailerror("")
+                }
+            break;
+            default:
+                break;
+        }
+        return validate;
+    };
   const handleOnclickRegister=async()=>{
-    try{
-      const response=await axios.post("")
-    }
-    catch(error){
-      console.log("lỗi ",error)
+    const validatename=checkInput('name',user.name)
+    const validateemail=checkInput('email',user.email)
+    const validatepassdword=checkInput('password',user.password)
+    const validateconfirmpassword=checkInput('confirmpassword',user.confirmpassword)
+    if(validatename&&validateemail&&validatepassdword&&validateconfirmpassword){
+
+      try{
+        const response=await axios.post("http://localhost:8080/api/user/register",{
+          email:user.email,
+          password:user.password,
+          userName:user.name,
+        })
+        console.log(response);
+        if(response.status==400){
+          alert("Email đã được đăng ký vui lòng đăng ký bằng email khác")
+          return;
+        }
+        else if(response.status==201){
+          alert("Đăng ký thành công");
+          navigate("/");
+        }
+      }
+      catch(error){
+        if (error.response) {
+          // Lỗi có response từ server
+          if (error.response.status === 400) {
+            alert("Email đã được đăng ký, vui lòng đăng ký bằng email khác");
+          } else {
+            console.log("Lỗi khác: ", error.response.data);
+          }
+        } else if (error.request) {
+          // Nếu không có response, lỗi từ request
+          console.log("Không nhận được phản hồi từ server: ", error.request);
+        } else {
+          // Lỗi trong quá trình thiết lập request
+          console.log("Lỗi cấu hình request: ", error.message);
+        }
+      }
     }
   }
   return (
@@ -43,7 +145,7 @@ function Register() {
                   placeholder="Tên đăng nhập"
                   name="name"
                   value={user.name}
-                  onChange={(e)=>handleOnchangeInput(e)}
+                  onChange={(e)=>handleOnchangeInput(e)}                  
                 />
                 <label
                   htmlFor="name"
@@ -51,6 +153,7 @@ function Register() {
                 >
                   Tên đăng nhập
                 </label>
+                {nameerror&& <p className='absolute top-12 left-2 text-red-500 text-sm'>{nameerror}</p>}
               </div>
               <div className="relative mb-10 md:mb-16">
                 <input
@@ -68,6 +171,7 @@ function Register() {
                 >
                   Email
                 </label>
+                {emailerror&& <p className='absolute top-12 left-2 text-red-500 text-sm'>{emailerror}</p>}
               </div>
 
               {/* Password input */}
@@ -87,6 +191,7 @@ function Register() {
                 >
                   Mật khẩu
                 </label>
+                {passworderror&& <p className='absolute top-12 left-2 text-red-500 text-sm'>{passworderror}</p>}
               </div>
               <div className="relative mb-10">
                 <input
@@ -104,6 +209,7 @@ function Register() {
                 >
                   Xác nhận mật khẩu
                 </label>
+                {confirnpassworderror&& <p className='absolute top-12 left-2 text-red-500 text-sm'>{confirnpassworderror}</p>}
               </div>
               <button
                 type="button"
