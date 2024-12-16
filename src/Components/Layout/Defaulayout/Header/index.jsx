@@ -5,23 +5,33 @@ import { IoMenu } from "react-icons/io5";
 import { FaPhone } from "react-icons/fa";
 import { IoTimeSharp } from "react-icons/io5";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SearchInput from "../../../Search";
 function Header() {
   const titles_1 = [
-    { title: "Sách kinh tế", link: "/" },
-    { title: "Sách chuyên ngành", link: "/" },
-    { title: "Sách giáo trình khoa học", link: "/" },
-    { title: "Sách thiếu nhi", link: "/" },
-    { title: "Sách ngoại ngữ", link: "/game" },
-    { title: "Sách phát triển bản thân", link: "/about" },
+    { title: "Sách kinh tế", link: 1 },
+    { title: "Sách chuyên ngành", link: 2 },
+    { title: "Sách giáo trình khoa học", link: 3 },
+    { title: "Sách thiếu nhi", link: 4 },
+    { title: "Sách ngoại ngữ", link: 5 },
+    { title: "Sách phát triển bản thân", link: 6 },
   ];
   const titles_2 = [
     { title: "Giỏ hàng", link: "/cartshopping" },
     { title: "Tài khoản của tôi", link: "/" },
     { title: "Đăng xuất", link: "/" },
   ];
+  const navigate=useNavigate()
   const [ismenu, setIsmenu] = useState(false);
+  const handleOnclickDX=()=>{
+    if(window.confirm("Bạn chắc chắc muốn đăng xuất")){
+      localStorage.removeItem("user");
+      alert("Đăng xuất thành công")
+      navigate("/")
+    }
+  }
+  const user =JSON.parse(localStorage.getItem("user"));
+  console.log("Người dùng ",user);
   return (
     <div>
       {/*upper navbar */}
@@ -70,12 +80,33 @@ function Header() {
                 8:30-18:30
               </p>
             </li>
-            <li className="list-none text-xl font-bold hover:text-primary relative group text-center">
-              {/* <Link to={UserStatus ? "/profile" : "/login"}> */}
-                <FaUser className=" text-center" />
-                <div className="absolute text-xs whitespace-nowrap hidden group-hover:block cursor-pointer text-center w-full py-1">
+            <li className="list-none text-xl font-normal relative group text-center cursor-pointer">
+              <Link to={user ? "/profile" : "/login"}>
+                <FaUser className="text-center" />
+              </Link>
+                {
+                  user?
+                <div className="absolute text-xs md:text-sm whitespace-nowrap hidden group-hover:grid group-hover:grid-rows-3 gap-y-2 z-10 cursor-pointer text-left px-3 py-1 bg-slate-50/100 w-[150px] transition-all duration-500 ease-in-out">
+                  <p className="hover:text-primary">
+                    <Link to={"/profile"}>
+                      Tài khoản của bạn
+                    
+                    </Link>
+                  </p>
+                  <Link className="hover:text-primary" to={"/productbought"}>
+                    Đơn mua
+                  </Link>
+                  <p className="hover:text-primary " onClick={()=>handleOnclickDX()}>
+                    Đăng xuất
+                  </p>
                 </div>
-              {/* </Link> */}
+                :
+                <div className="absolute text-sm whitespace-nowrap right-[-30px] hidden group-hover:block group-hover:text-primary">
+                  <p>
+                    Đăng nhập
+                  </p>
+                </div>
+                }
             </li>
             <li className="list-none text-xl font-bold hover:text-primary relative group text-center">
               <Link to="/cartshopping">
@@ -94,7 +125,7 @@ function Header() {
           {titles_1.map((title_1, index) => {
             return (
               <li key={index} className="hover:text-yellow-300 transition-all duration-500">
-                <Link to={title_1.link}>{title_1.title}</Link>
+                <Link to={`/catalog/${title_1.link}`}>{title_1.title}</Link>
               </li>
             );
           })}

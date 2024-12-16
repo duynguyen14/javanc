@@ -6,14 +6,9 @@ import { RiSubtractFill } from "react-icons/ri";
 import { useEffect, useState } from "react";
 import Introbook from "../../../Components/Introbook";
 import ProductRelated from "../../../Components/SanPham";
+import { request } from "../../../utils";
 function Product() {
-    const product={
-              id: 1,
-              name: "Nhà Giả Kim",
-              author: "Paulo Coelho",
-              price: "120.000",
-              image: Image1,
-    }
+    const [product,setProduct]=useState({});
     const {id} =useParams();
     const [number,setNumber]=useState(1);
     const handleOnclickSubtract=()=>{
@@ -29,29 +24,33 @@ function Product() {
     useEffect(()=>{
         fetch=async()=>{
             try{
-                
+                const response= await request.get(`products/${id}`)
+                console.log(response.data);
+                setProduct(response.data)
             }
             catch(error){
                 console.log(error);
             }
         }
         fetch();
-    },[])
+    },[id])
     return ( 
         <div className="test bg-white pt-10 font-Montserrat">
             {/* Product {id} */}
             <div className="flex gap-x-5">
+                {
+                    product&&
                 <div className="flex basis-[75%]">
-                    <div className="h-[500px]">
-                        <img src={product.image} alt=""  className="h-full"/>
+                    <div className="h-[500px] mr-5">
+                        <img src={product.productImage} alt=""  className="h-full"/>
                     </div>
                     <div>
                         <div className="text-xl font-medium">
                             <p className="font-semibold text-2xl hover:text-test2 cursor-pointer  py-5">
-                                {product.name}
+                                {product.productName}
                             </p>
                             <p className="pb-5">
-                                Tác giả: {product.author}
+                                Tác giả: {product.productAuthor}
                             </p>
                             <p className="text-red-500 mb-10">
                                 {product.price} đ
@@ -77,6 +76,7 @@ function Product() {
                         </div>
                     </div>
                 </div>
+                }
                 <div className="border-[1px] shadow-fuchsia-50 basis-[25%] mr-10 h-[400px] rounded-md grid grid-rows-5 gap-y-4">
                     <p className="py-2 bg-gray-100 flex items-center font-semibold px-2 text-center text-xl">
                         Chỉ có ở &ensp;<span className="text-primary"> BookStore</span>

@@ -56,10 +56,10 @@ function Login() {
       <div className="flex h-full items-center justify-center ">
         <div className="md:w-8/12 lg:ms-6 lg:w-5/12 border-[0.5px] border-test  px-5 py-2 rounded-md bg-slate-50">
           <div className="w-full text-center pb-20 text-primary text-3xl font-semibold pt-2">
-            <p>
+            <Link to={"/"}>
               BookStore
               {/* <span className="text-red-500">Store</span> */}
-            </p>
+            </Link>
           </div>
           <form>
             {/* Email input */}

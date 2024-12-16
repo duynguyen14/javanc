@@ -1,48 +1,43 @@
+import { useParams } from "react-router-dom";
+import VerticalNav from "../../../Components/Navbar";
 import { useEffect, useState } from "react";
-import demo from "../../assets/images/1.jpg";
+import { request } from "../../../utils";
 import { Link } from "react-router-dom";
-import { request } from "../../utils";
-function ProductRelated() {
+function Category() {
+    const {id}=useParams();
     const [product,setProduct]=useState([]);
-    const [productSlice,setProductSlice]=useState([]);
+    const [categoryName,setCategoryName]=useState("");
     useEffect(()=>{
-      const fetch=async()=>{
-        try{
-          const response=await request.get("products");
-          console.log(response.data);
-          setProduct(response.data);
+        const fetch =async()=>{
+            const response=await request.get(`products/category/${id}`)
+            console.log(response.data)
+            setCategoryName(response.data.category.categoryName)
+            setProduct(response.data.list);
         }
-        catch(error){
-          console.log("Lỗi ",error)
-        }
-      }
-      fetch()
-    },[])
-    useEffect(() => {
-      if (product && product.length > 0) {
-        setProductSlice(product.slice(20, 30));
-      }
-    }, [product]);
+        fetch()
+    },[id])
     return ( 
-        <div>
-            <div className="font-semibold text-xl text-center mb-10">
-                <p>
-                    Sản phẩm liên quan
-                </p>
+        <div className="flex test">
+            <div className="basis-[25%] mr-[-25px]">
+            <VerticalNav/>
             </div>
-            <div className="grid grid-books grid-cols-2 md:grid-cols-5 gap-4 md:gap-6">
-        {productSlice.map((item, index) => {
+            <div className="basis-[75%] ml-20 ]">
+                <div className="text-3xl font-medium mt-10 mb-20 hover:text-test2 cursor-pointer transition-all duration-500 ease-in-out">
+                   Sách {categoryName}
+                </div>
+                <div className="grid grid-books grid-cols-2 md:grid-cols-2 gap-y-10 md:gap-x-60">
+        {product.map((item, index) => {
           return (
             <Link to={`/product/${item.id}`} key={index}>
               <div
-                className="group relative book-card bg-white rounded-xl p-4 text-center h-[400px] shadow-lg hover:scale-105 transition-all duration-300 hover:shadow-sm hover:cursor-pointer"
+                className="group relative book-card bg-white rounded-xl p-4 text-center shadow-lg hover:scale-105 transition-all duration-300 hover:shadow-sm hover:cursor-pointer h-[400px]"
               >
                 <img
                   src={item.productImage}
                   alt="Sách 1"
                   className="mx-auto mb-4 rounded-lg max-w-full h-[65%]"
                 />
-                <p className="font-bold text-sm md:text-sm">{item.productName}</p>
+                <h3 className="font-bold text-base md:text-sm">{item.productName}</h3>
                 <p className="text-gray-600 mb-2 text-sm">{item.productAuthor}</p>
                 <div className="flex justify-between items-center">
                   <del className="text-gray-400 font-semibold">{item.price}</del>
@@ -65,8 +60,9 @@ function ProductRelated() {
           );
         })}
       </div>
+            </div>
         </div>
      );
 }
 
-export default ProductRelated;
+export default Category;

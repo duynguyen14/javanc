@@ -1,69 +1,32 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import demo from "../../assets/images/1.jpg";
 import { Link } from "react-router-dom";
+import { request } from "../../utils";
 function Sale() {
-  const products = [
-    {
-      id: 1,
-      name: "Nhà Giả Kim",
-      author: "Paulo Coelho",
-      price: "120.000",
-      image: demo,
-    },
-    {
-      id: 2,
-      name: "Nhà Giả Kim",
-      author: "Paulo Coelho",
-      price: "120.000",
-      image: demo,
-    },
-    {
-      id: 3,
-      name: "Nhà Giả Kim",
-      author: "Paulo Coelho",
-      price: "120.000",
-      image: demo,
-    },
-    {
-      id: 4,
-      name: "Nhà Giả Kim",
-      author: "Paulo Coelho",
-      price: "120.000",
-      image: demo,
-    },
-    {
-      id: 5,
-      name: "Nhà Giả Kim",
-      author: "Paulo Coelho",
-      price: "120.000",
-      image: demo,
-    },
-    {
-      id: 6,
-      name: "Nhà Giả Kim",
-      author: "Paulo Coelho",
-      price: "120.000",
-      image: demo,
-    },
-    {
-      id: 7,
-      name: "Nhà Giả Kim",
-      author: "Paulo Coelho",
-      price: "120.000",
-      image: demo,
-    },
-    {
-      id: 8,
-      name: "Nhà Giả Kim",
-      author: "Paulo Coelho",
-      price: "120.000",
-      image: demo,
-    },
-  ];
+  const [product,setProduct]=useState([]);
   const hadleOnclick = () => {
     setStatus(true);
   };
   const [status, setStatus] = useState(false);
+  const [productSlice,setProductSlice]=useState([]);
+    useEffect(()=>{
+      const fetch=async()=>{
+        try{
+          const response=await request.get("products");
+          console.log(response.data);
+          setProduct(response.data);
+        }
+        catch(error){
+          console.log("Lỗi ",error)
+        }
+      }
+      fetch()
+    },[])
+    useEffect(() => {
+      if (product && product.length > 0) {
+        setProductSlice(product.slice(0, 8));
+      }
+    }, [product]);
   return (
     <div className="py-5 font-Montserrat">
       <section className="container mx-auto px-4 mb-5 flex gap-x-10">
@@ -79,19 +42,19 @@ function Sale() {
         </p>
       </section>
       <div className="grid grid-books grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-        {products.map((item, index) => {
+        {productSlice.map((item, index) => {
           return (
             <Link to={`/product/${item.id}`} key={index}>
               <div
-                className="group relative book-card bg-white rounded-xl p-4 text-center shadow-lg hover:scale-105 transition-all duration-300 hover:shadow-sm hover:cursor-pointer"
+                className="group relative book-card bg-white rounded-xl p-4 text-center shadow-lg hover:scale-105 transition-all duration-300 hover:shadow-sm hover:cursor-pointer h-[400px]"
               >
                 <img
-                  src={item.image}
+                  src={item.productImage}
                   alt="Sách 1"
-                  className="mx-auto mb-4 rounded-lg max-w-full h-auto"
+                  className="mx-auto mb-4 rounded-lg max-w-full h-[65%]"
                 />
-                <h3 className="font-bold text-base md:text-lg">{item.name}</h3>
-                <p className="text-gray-600 mb-2 text-sm">{item.author}</p>
+                <h3 className="font-bold text-base md:text-sm">{item.productName}</h3>
+                <p className="text-gray-600 mb-2 text-sm">{item.productAuthor}</p>
                 <div className="flex justify-between items-center">
                   <del className="text-gray-400 font-semibold">{item.price}</del>
                   <p className="text-red-500 font-semibold">{item.price}</p>
