@@ -105,7 +105,7 @@ function Register() {
         }
         else if(response.status==201){
           alert("Đăng ký thành công");
-          navigate("/");
+          navigate("/login");
         }
       }
       catch(error){

@@ -10,6 +10,8 @@ import Product from "./Customer/Product";
 import Category from "./Customer/Category";
 import Catalog from "./Customer/Catalog";
 import CartShopping from "./Customer/CartShopping";
+import Bill from "./Customer/Bill";
+import Billdetail from "./Customer/Bill/billdetail";
 const PublicPage=[
     {path:"/login",component: Login, layout: null},
     {path:"/register",component: Register, layout: null},
@@ -19,6 +21,8 @@ const PublicPage=[
     {path:"/category/:id",component: Category, layout: Defautlayout},
     {path:"/catalog/:id",component: Catalog, layout: Defautlayout},
     {path:"/cartshopping",component: CartShopping, layout: Defautlayout},
+    {path:"/bill",component: Bill, layout: Defautlayout},
+    {path:"/bill/billdetail/:billID",component: Billdetail, layout: Defautlayout},
     // {path:"/",component: Home, layout: Defautlayout},
     // {path:"/",component: Home, layout: Defautlayout},
     {path:"/admin/home", component: AdminHome, layout: Adminlayout},

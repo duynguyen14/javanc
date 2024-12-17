@@ -27,6 +27,9 @@ function Sale() {
         setProductSlice(product.slice(0, 8));
       }
     }, [product]);
+  const handleOnclickAdd=()=>{
+    
+  }
   return (
     <div className="py-5 font-Montserrat">
       <section className="container mx-auto px-4 mb-5 flex gap-x-10">
@@ -62,8 +65,10 @@ function Sale() {
                 <div className="absolute px-2 py-1 bg-red-500 text-xs text-white font-semibold text-center top-[10%] left-[78%]">
                   <p>-20%</p>
                 </div>
-                <button className=" ml-[-16px] hidden group-hover:block absolute w-full py-2 bg-red-500 top-[85%] rounded-md text-white font-semibold">
-                  Mua ngay
+                <button className=" ml-[-16px] hidden group-hover:block absolute w-full py-2 bg-red-500 top-[85%] rounded-md text-white font-semibold"
+                onClick={()=>handleOnclickAdd()}
+                >
+                 Thêm vào giỏ hàng
                 </button>
                 {/* <button
                   className="hidden group-hover:block absolute bottom-[10px] left-0 w-full bg-blue-500 text-white font-bold py-2 text-center 

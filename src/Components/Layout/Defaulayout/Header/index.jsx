@@ -93,7 +93,7 @@ function Header() {
                     
                     </Link>
                   </p>
-                  <Link className="hover:text-primary" to={"/productbought"}>
+                  <Link className="hover:text-primary" to={"/bill"}>
                     Đơn mua
                   </Link>
                   <p className="hover:text-primary " onClick={()=>handleOnclickDX()}>

@@ -52,7 +52,7 @@ function ProductRelated() {
                   <p>-20%</p>
                 </div>
                 <button className=" ml-[-16px] hidden group-hover:block absolute w-full py-2 bg-red-500 top-[85%] rounded-md text-white font-semibold">
-                  Mua ngay
+                  Thêm vào giỏ hàng
                 </button>
                 {/* <button
                   className="hidden group-hover:block absolute bottom-[10px] left-0 w-full bg-blue-500 text-white font-bold py-2 text-center 

@@ -40,7 +40,7 @@ function Login() {
         }
         localStorage.setItem("user",JSON.stringify(response.data.user));
       }
-      else if(response.status==400){
+      else if(response.status==400 || response.status==404){
         setShowmessage(true)
       }
       else{

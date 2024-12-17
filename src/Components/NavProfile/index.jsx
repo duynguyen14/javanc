@@ -20,7 +20,7 @@ function NavProfile() {
                 </Link>
             </li>
             <li className="list-none py-5">
-                <Link to={"/productbought"} className="hover:text-primary">
+                <Link to={"/bill"} className="hover:text-primary">
                     Đơn mua
                 </Link>
             </li>

@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Image1 from "../../../assets/images/1.jpg";
 import { AiFillCheckCircle } from "react-icons/ai";
 import { FaPlus } from "react-icons/fa";
@@ -8,8 +8,11 @@ import Introbook from "../../../Components/Introbook";
 import ProductRelated from "../../../Components/SanPham";
 import { request } from "../../../utils";
 function Product() {
+    const user =JSON.parse(localStorage.getItem("user"));
     const [product,setProduct]=useState({});
     const {id} =useParams();
+    // console.log(id)
+    const navigate=useNavigate();
     const [number,setNumber]=useState(1);
     const handleOnclickSubtract=()=>{
         if(number<1){
@@ -34,6 +37,31 @@ function Product() {
         }
         fetch();
     },[id])
+    const handleOnclickAdd=async()=>{
+        if(!user){
+            alert("Bạn chưa đăng nhập vui lòng đăng nhập")
+            navigate("/login");
+            return;
+        }
+        else{
+            try{
+                const response =await request.post(`cartdetail/add/${user.id}`,{
+                    productId: id,
+                    quantity:number,
+                }
+            )
+            console.log(response);
+            if(response.status==200|| response.status==201){
+                alert("Thêm vào giỏ hàng thành công");
+                
+            }
+            }
+            catch(error){
+                console.log("Lỗi ",error)
+            }
+        }
+    }
+    console.log("Kiểu dữ liệu :",typeof(user.id));
     return ( 
         <div className="test bg-white pt-10 font-Montserrat">
             {/* Product {id} */}
@@ -66,9 +94,12 @@ function Product() {
                             </div>
                             <div>
                                 <div className="flex font-normal gap-x-10 text-sm">
-                                    <button className="px-8 text-white rounded-md py-3 bg-red-500 button-primary hover:bg-red-600">                                       Mua ngay
+                                    <button className="px-8 text-white rounded-md py-3 bg-red-500 button-primary hover:bg-red-600"
+                                    onClick={()=>handleOnclickAdd()}
+                                    >Mua ngay
                                     </button>
-                                    <button className="px-8 text-white rounded-md py-3 bg-test2 button-primary hover:bg-orange-500">
+                                    <button className="px-8 text-white rounded-md py-3 bg-test2 button-primary hover:bg-orange-500"
+                                    onClick={()=>handleOnclickAdd()}>
                                         Thêm vào giỏ hàng
                                     </button>
                                 </div>
