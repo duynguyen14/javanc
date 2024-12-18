@@ -12,6 +12,8 @@ import Catalog from "./Customer/Catalog";
 import CartShopping from "./Customer/CartShopping";
 import Bill from "./Customer/Bill";
 import Billdetail from "./Customer/Bill/billdetail";
+import Manauser from "./Admin/ManaUser";
+import BillManagement from "./Admin/BillMana";
 const PublicPage=[
     {path:"/login",component: Login, layout: null},
     {path:"/register",component: Register, layout: null},
@@ -27,7 +29,9 @@ const PublicPage=[
     // {path:"/",component: Home, layout: Defautlayout},
     {path:"/admin/home", component: AdminHome, layout: Adminlayout},
     {path:"/admin/product", component: ManaProduct, layout: Adminlayout},
-    {path:"/admin/home", component: AdminHome, layout: Adminlayout},
+    {path:"/admin/users", component: Manauser, layout: Adminlayout},
+    {path:"/admin/bills", component: BillManagement, layout: Adminlayout},
+    // {path:"/admin/home", component: AdminHome, layout: Adminlayout},
 ]
 const PrivatePage=[
     
