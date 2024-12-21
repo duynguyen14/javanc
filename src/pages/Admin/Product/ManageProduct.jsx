@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Edit, 
   Trash2, 
@@ -8,54 +8,44 @@ import {
 } from 'lucide-react';
 
 const ManaProduct = () => {
-  const [catalogs, setCatalogs] = useState([
-    {
-      id: 1,
-      catalog_name: 'Sách Văn Học',
-      categories: [
-        { id: 1, category_name: 'Tiểu Thuyết Việt Nam', catalog_id: 1 },
-        { id: 2, category_name: 'Tiểu Thuyết Nước Ngoài', catalog_id: 1 }
-      ]
-    },
-    {
-      id: 2,
-      catalog_name: 'Sách Chuyên Ngành',
-      categories: [
-        { id: 3, category_name: 'Khoa Học Kỹ Thuật', catalog_id: 2 },
-        { id: 4, category_name: 'Kinh Tế', catalog_id: 2 }
-      ]
-    }
-  ]);
-
-  const [products, setProducts] = useState([
-    {
-      product_id: 'SP001',
-      product_name: 'Nhà Giả Kim',
-      product_author: 'Paulo Coelho',
-      product_quantity: 100,
-      product_price: 79000,
-      product_image: '/path/to/image1.jpg',
-      product_describe: 'Một cuốn sách truyền cảm hứng về hành trình theo đuổi ước mơ',
-      category_id: 2
-    },
-    {
-      product_id: 'SP002',
-      product_name: 'Lập Trình Python Căn Bản',
-      product_author: 'Nguyễn Văn A',
-      product_quantity: 50,
-      product_price: 120000,
-      product_image: '/path/to/image2.jpg',
-      product_describe: 'Sách hướng dẫn lập trình Python từ cơ bản đến nâng cao',
-      category_id: 3
-    }
-  ]);
-
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentProduct, setCurrentProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedImage, setSelectedImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Handlers sản phẩm 
+  useEffect(() => {
+    fetchProducts();
+    fetchCategories();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/api/crud_products');
+      if (!response.ok) throw new Error('Failed to fetch products');
+      const data = await response.json();
+      setProducts(data);
+      setIsLoading(false);
+    } catch (err) {
+      setError(err.message);
+      setIsLoading(false);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/api/crud_products/categories');
+      if (!response.ok) throw new Error('Failed to fetch categories');
+      const data = await response.json();
+      setCategories(data);
+    } catch (err) {
+      console.error('Error fetching categories:', err);
+    }
+  };
+
   const handleAddProduct = () => {
     setCurrentProduct(null);
     setSelectedImage(null);
@@ -64,54 +54,68 @@ const ManaProduct = () => {
 
   const handleEditProduct = (product) => {
     setCurrentProduct(product);
-    setSelectedImage(product.product_image);
+    setSelectedImage(product.productImage);
     setIsModalOpen(true);
   };
 
-  const handleDeleteProduct = (productId) => {
+  const handleDeleteProduct = async (productId) => {
     if (window.confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
-      setProducts(products.filter(product => product.product_id !== productId));
+      try {
+        const response = await fetch(`http://localhost:8080/api/crud_products/${productId}`, {
+          method: 'DELETE'
+        });
+        if (!response.ok) throw new Error('Failed to delete product');
+        await fetchProducts();
+      } catch (err) {
+        console.error('Error deleting product:', err);
+      }
     }
   };
 
-  // Lưu sản phầmr 
-  const handleSaveProduct = (productData) => {
-    const { product_id, product_name, product_author, product_quantity, product_price, product_describe, category_id } = productData;
-    
-    if (currentProduct) {
-      // chỉnh sửasửa
-      setProducts(products.map(product => 
-        product.product_id === currentProduct.product_id 
-          ? { 
-              ...product, 
-              product_name,
-              product_author,
-              product_quantity: Number(product_quantity),
-              product_price: Number(product_price),
-              product_image: selectedImage || product.product_image,
-              product_describe,
-              category_id: Number(category_id)
-            } 
-          : product
-      ));
-    } else {
-      // thêm mớimới
-      const newProduct = {
-        product_id: `SP${(products.length + 1).toString().padStart(3, '0')}`,
-        product_name,
-        product_author,
-        product_quantity: Number(product_quantity),
-        product_price: Number(product_price),
-        product_image: selectedImage || '/path/to/default-image.jpg',
-        product_describe,
-        category_id: Number(category_id)
-      };
-      setProducts([...products, newProduct]);
+  const handleSaveProduct = async (productData) => {
+    try {
+      const formData = new FormData();
+      // Lấy category ID từ categories array
+      const selectedCategory = categories.find(cat => cat.categoryName === productData.categoryName);
+  
+      formData.append('categoryId', selectedCategory.id);
+  
+      // Thêm tất cả các thông tin sản phẩm vào formData
+      Object.keys(productData).forEach(key => {
+        if (key !== 'categoryName') { 
+          formData.append(key, productData[key]);
+        }
+      });
+  
+      // Nếu có ảnh được chọn, thêm ảnh vào formData
+      if (selectedImage && selectedImage.startsWith('data:')) {
+        const response = await fetch(selectedImage);
+        const blob = await response.blob();
+        formData.append('image', blob, 'product-image.jpg');
+      }
+  
+      // Nếu đang cập nhật sản phẩm hiện tại, phải bao gồm ID sản phẩm
+      if (currentProduct && currentProduct.id) {
+        formData.append('id', currentProduct.id);  // Thêm ID sản phẩm vào formData
+      }
+  
+      const url = currentProduct
+        ? `http://localhost:8080/api/crud_products/update`  // URL để cập nhật sản phẩm
+        : 'http://localhost:8080/api/crud_products';  // URL để tạo sản phẩm mới
+  
+      const response = await fetch(url, {
+        method: currentProduct ? 'PUT' : 'POST',
+        body: formData,
+      });
+  
+      if (!response.ok) throw new Error('Failed to save product');
+      await fetchProducts();  // Sau khi lưu sản phẩm, tải lại danh sách sản phẩm
+      setIsModalOpen(false);  // Đóng modal
+    } catch (err) {
+      console.error('Error saving product:', err);
     }
-    setIsModalOpen(false);
   };
 
-  // IXử lí ảnh tải lên
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -123,26 +127,25 @@ const ManaProduct = () => {
     }
   };
 
-  // Sản phẩm Modal Component
   const ProductModal = () => {
     const [formData, setFormData] = useState(
       currentProduct 
         ? { 
-            product_id: currentProduct.product_id,
-            product_name: currentProduct.product_name,
-            product_author: currentProduct.product_author,
-            product_quantity: currentProduct.product_quantity,
-            product_price: currentProduct.product_price,
-            product_describe: currentProduct.product_describe,
-            category_id: currentProduct.category_id
+            id: currentProduct.id,
+            productName: currentProduct.productName,
+            productAuthor: currentProduct.productAuthor,
+            quantity: currentProduct.quantity,
+            price: currentProduct.price,
+            productDescription: currentProduct.productDescription,
+            categoryName: currentProduct.categoryName
           }
         : {
-            product_name: '',
-            product_author: '',
-            product_quantity: '',
-            product_price: '',
-            product_describe: '',
-            category_id: ''
+            productName: '',
+            productAuthor: '',
+            quantity: '',
+            price: '',
+            productDescription: '',
+            categoryName: ''
           }
     );
 
@@ -150,12 +153,6 @@ const ManaProduct = () => {
       const { name, value } = e.target;
       setFormData({ ...formData, [name]: value });
     };
-    const flattenedCategories = catalogs.flatMap(catalog => 
-      catalog.categories.map(category => ({
-        ...category,
-        full_name: `${catalog.catalog_name} - ${category.category_name}`
-      }))
-    );
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -167,60 +164,60 @@ const ManaProduct = () => {
             <div className="w-1/2 space-y-4">
               <input
                 type="text"
-                name="product_name"
+                name="productName"
                 placeholder="Tên Sách"
-                value={formData.product_name}
+                value={formData.productName}
                 onChange={handleChange}
                 className="w-full p-2 border rounded"
                 required
               />
               <input
                 type="text"
-                name="product_author"
+                name="productAuthor"
                 placeholder="Tác Giả"
-                value={formData.product_author}
+                value={formData.productAuthor}
                 onChange={handleChange}
                 className="w-full p-2 border rounded"
                 required
               />
               <input
                 type="number"
-                name="product_quantity"
+                name="quantity"
                 placeholder="Số Lượng"
-                value={formData.product_quantity}
+                value={formData.quantity}
                 onChange={handleChange}
                 className="w-full p-2 border rounded"
                 required
               />
               <input
                 type="number"
-                name="product_price"
+                name="price"
                 placeholder="Giá Sản Phẩm"
-                value={formData.product_price}
+                value={formData.price}
                 onChange={handleChange}
                 className="w-full p-2 border rounded"
                 required
               />
               <select
-                name="category_id"
-                value={formData.category_id}
+                name="categoryName"
+                value={formData.categoryName}
                 onChange={handleChange}
                 className="w-full p-2 border rounded"
                 required
               >
-                <option value="">Chọn Loại Sản Phẩm</option>
-                {flattenedCategories.map(category => (
-                  <option key={category.id} value={category.id}>
-                    {category.full_name}
+                <option value="">Chọn Thể Loại</option>
+                {categories.map(category => (
+                  <option key={category.id} value={category.categoryName}>
+                    {category.categoryName}
                   </option>
                 ))}
               </select>
             </div>
             <div className="w-1/2 space-y-4">
               <textarea
-                name="product_describe"
+                name="productDescription"
                 placeholder="Mô Tả Sản Phẩm"
-                value={formData.product_describe}
+                value={formData.productDescription}
                 onChange={handleChange}
                 className="w-full p-2 border rounded h-32"
                 required
@@ -271,21 +268,14 @@ const ManaProduct = () => {
       </div>
     );
   };
+
   const filteredProducts = products.filter(product => 
-    product.product_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.product_author.toLowerCase().includes(searchTerm.toLowerCase())
+    product.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product.productAuthor.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // tìm kiếm 
-  const getCategoryName = (categoryId) => {
-    for (const catalog of catalogs) {
-      const category = catalog.categories.find(cat => cat.id === categoryId);
-      if (category) {
-        return `${catalog.catalog_name} - ${category.category_name}`;
-      }
-    }
-    return 'Không xác định';
-  };
+  if (isLoading) return <div className="p-6">Loading...</div>;
+  if (error) return <div className="p-6 text-red-600">Error: {error}</div>;
 
   return (
     <div className="p-6">
@@ -311,13 +301,13 @@ const ManaProduct = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredProducts.map((product) => (
           <div 
-            key={product.product_id} 
+            key={product.id} 
             className="bg-white shadow-md rounded-lg overflow-hidden flex"
           >
             <div className="w-1/3 p-2">
               <img 
-                src={product.product_image} 
-                alt={product.product_name}
+                src={product.productImage} 
+                alt={product.productName}
                 className="w-full h-48 object-cover rounded"
                 onError={(e) => {
                   e.target.src = '/path/to/default-image.jpg';
@@ -325,17 +315,17 @@ const ManaProduct = () => {
               />
             </div>
             <div className="w-2/3 p-4">
-              <h3 className="font-semibold text-lg mb-2">{product.product_name}</h3>
-              <p className="text-gray-600 mb-1">Tác Giả: {product.product_author}</p>
+              <h3 className="font-semibold text-lg mb-2">{product.productName}</h3>
+              <p className="text-gray-600 mb-1">Tác Giả: {product.productAuthor}</p>
               <p className="text-gray-600 mb-1">
-                Loại: {getCategoryName(product.category_id)}
+                Loại: {product.categoryName}
               </p>
-              <p className="text-gray-600 mb-1">Số Lượng: {product.product_quantity}</p>
+              <p className="text-gray-600 mb-1">Số Lượng: {product.quantity}</p>
               <p className="text-blue-600 font-bold mb-2">
-                Giá: {product.product_price.toLocaleString()} VND
+                Giá: {product.price.toLocaleString()} VND
               </p>
               <p className="text-sm text-gray-500 mb-2 line-clamp-2">
-                {product.product_describe}
+                {product.productDescription}
               </p>
               <div className="flex space-x-2 mt-2">
                 <button 
@@ -345,7 +335,7 @@ const ManaProduct = () => {
                   <Edit size={20} />
                 </button>
                 <button 
-                  onClick={() => handleDeleteProduct(product.product_id)}
+                  onClick={() => handleDeleteProduct(product.id)}
                   className="text-red-600 hover:text-red-800"
                 >
                   <Trash2 size={20} />
@@ -356,7 +346,6 @@ const ManaProduct = () => {
         ))}
       </div>
 
-      {/* Hiển thị Modal nếu isModalOpen là true */}
       {isModalOpen && <ProductModal />}
     </div>
   );
