@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import {request} from "../../../utils/index.js"
 import { 
   Edit, 
   Trash2, 
@@ -61,11 +62,8 @@ const ManaProduct = () => {
   const handleDeleteProduct = async (productId) => {
     if (window.confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
       try {
-        const response = await fetch(`http://localhost:8080/api/crud_products/${productId}`, {
-          method: 'DELETE'
-        });
-        if (!response.ok) throw new Error('Failed to delete product');
-        await fetchProducts();
+        const response=await request.delete(`crud_products/delete/${productId}`);
+        console.log(response);
       } catch (err) {
         console.error('Error deleting product:', err);
       }
