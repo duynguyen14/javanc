@@ -12,15 +12,15 @@ const billService = {
     return [
       {
         id: 1,
-        user: { fullname: "John Doe" },
-        total: 250.5,
+        user: { fullname: "Nguyễn Đức Duy" },
+        total: 250000,
         methodPay: "Credit Card",
         doe: "2024-02-15",
       },
       {
         id: 2,
-        user: { fullname: "Jane Smith" },
-        total: 150.75,
+        user: { fullname: "Đào Trọng Duy" },
+        total: 150000,
         methodPay: "PayPal",
         doe: "2024-02-16",
       },
@@ -30,8 +30,8 @@ const billService = {
   getBillDetails: async (billId) => {
     return {
       id: billId,
-      user: { fullname: "John Doe" },
-      total: 250.5,
+      user: { fullname: "Nguyễn Đức Duy" },
+      total: 255000,
       methodPay: "Credit Card",
       doe: "2024-02-15",
       products: [
@@ -39,20 +39,20 @@ const billService = {
           product_id: "P001",
           product_name: "Book 1",
           quantity: 2,
-          total: 100.0,
+          total: 100000,
         },
         {
           product_id: "P002",
           product_name: "Book 2",
           quantity: 1,
-          total: 150.5,
+          total: 150000,
         },
       ],
     };
   },
 
   cancelBill: async (billId) => {
-    console.log(`Bill ${billId} cancelled`);
+    console.log(`Bill {billId} cancelled`);
     return true;
   },
 };
@@ -112,7 +112,7 @@ const BillManagement = () => {
                 <TableCell>Mã hóa đơn</TableCell>
                 <TableCell>Khách hàng</TableCell>
                 <TableCell align="right">Tổng tiền</TableCell>
-                <TableCell>Phương thức thanh toán</TableCell>
+                {/* <TableCell>Phương thức thanh toán</TableCell> */}
                 <TableCell>Thời gian</TableCell>
                 <TableCell>Hành động</TableCell>
               </TableRow>
@@ -128,8 +128,8 @@ const BillManagement = () => {
                 >
                   <TableCell>{bill.id}</TableCell>
                   <TableCell>{bill.user.fullname}</TableCell>
-                  <TableCell align="right">${bill.total.toFixed(2)}</TableCell>
-                  <TableCell>{bill.methodPay}</TableCell>
+                  <TableCell align="right">{bill.total} VNĐ</TableCell>
+                  {/* <TableCell>{bill.methodPay}</TableCell> */}
                   <TableCell>{bill.doe}</TableCell>
                   <TableCell>
                     <Button
@@ -169,10 +169,10 @@ const BillManagement = () => {
                   <p><strong>Mã hóa đơn:</strong> {selectedBill.id}</p>
                   <p><strong>Khách hàng:</strong> {selectedBill.user.fullname}</p>
                   <p><strong>Ngày:</strong> {selectedBill.doe}</p>
-                  <p><strong>Phương thức thanh toán:</strong> {selectedBill.methodPay}</p>
+                  {/* <p><strong>Phương thức thanh toán:</strong> {selectedBill.methodPay}</p> */}
                 </div>
                 <div className="text-right">
-                  <p><strong>Tổng cộng:</strong> ${selectedBill.total.toFixed(2)}</p>
+                  <p><strong>Tổng cộng:</strong> {selectedBill.total.toFixed(2)}</p>
                 </div>
               </div>
 
@@ -192,7 +192,7 @@ const BillManagement = () => {
                         <TableCell>{product.product_id}</TableCell>
                         <TableCell>{product.product_name}</TableCell>
                         <TableCell align="right">{product.quantity}</TableCell>
-                        <TableCell align="right">${product.total.toFixed(2)}</TableCell>
+                        <TableCell align="right">{product.total.toFixed(2)} nghìn VNĐ</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

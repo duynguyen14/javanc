@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -9,6 +9,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { request } from "../../../utils";
 
 // Đăng ký các thành phần cần thiết của Chart.js
 ChartJS.register(BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
@@ -82,7 +83,18 @@ const AdminHome = () => {
   const todayRevenue = 200000; // Đơn vị triệu VNĐ
   const newRegistrations = 2; // Số người đăng ký mới
   const activeUsers = 3; // Số người đang hoạt động
-
+  useEffect(()=>{
+    const fetch=async()=>{
+      try{
+        const response=await request.get();
+        console.log(response);
+      }
+      catch(e){
+        console.log(e)
+      }
+    }
+    fetch()
+  },[])
   return (
     <div className="p-6 bg-white shadow-md rounded-lg h-full">
       {/* Thẻ thông tin */}

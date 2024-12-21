@@ -7,6 +7,9 @@ import { IoTimeSharp } from "react-icons/io5";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import SearchInput from "../../../Search";
+import Tippy from "@tippyjs/react/headless";
+import "tippy.js/dist/tippy.css";
+import Search from "../../../ResultSearch";
 function Header() {
   const titles_1 = [
     { title: "Sách kinh tế", link: 1 },
@@ -21,17 +24,24 @@ function Header() {
     { title: "Tài khoản của tôi", link: "/" },
     { title: "Đăng xuất", link: "/" },
   ];
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   const [ismenu, setIsmenu] = useState(false);
-  const handleOnclickDX=()=>{
-    if(window.confirm("Bạn chắc chắc muốn đăng xuất")){
+  const handleOnclickDX = () => {
+    if (window.confirm("Bạn chắc chắc muốn đăng xuất")) {
       localStorage.removeItem("user");
-      alert("Đăng xuất thành công")
-      navigate("/")
+      alert("Đăng xuất thành công");
+      navigate("/");
     }
-  }
-  const user =JSON.parse(localStorage.getItem("user"));
-  console.log("Người dùng ",user);
+  };
+  const user = JSON.parse(localStorage.getItem("user"));
+  // console.log("Người dùng ",user);
+  const [search, setSearch] = useState("duy");
+  const handleOnchange = (e) => {
+    setSearch(e.target.value);
+    setIsvisible(true);
+  };
+  console.log("Giá trị nhập vào :", search);
+  const [isVisible,setIsvisible]=useState(false)
   return (
     <div>
       {/*upper navbar */}
@@ -50,7 +60,21 @@ function Header() {
           </Link>
         </div>
         <div className="hidden md:block lg:w-[40%]">
-            <SearchInput/>
+          <Tippy
+            placement="bottom"
+            // trigger="click"
+            interactive={true}
+            visible={isVisible}
+            render={(attrs) => (
+              <div className="box bg-white w-full" tabIndex="-1" {...attrs}>
+                <Search search={search} setVisible={setIsvisible} setSearch={setSearch}/>
+              </div>
+            )}
+          >
+            <div className="hidden lg:flex relative group w-[500px]">
+              <SearchInput search={search} onchange={handleOnchange} visible={isVisible} setVisible={setIsvisible}/>
+            </div>
+          </Tippy>
         </div>
         {/*contact and user */}
         <div className="flex justify-between items-center gap-x-4">
@@ -84,29 +108,26 @@ function Header() {
               <Link to={user ? "/profile" : "/login"}>
                 <FaUser className="text-center" />
               </Link>
-                {
-                  user?
+              {user ? (
                 <div className="absolute text-xs md:text-sm whitespace-nowrap hidden group-hover:grid group-hover:grid-rows-3 gap-y-2 z-10 cursor-pointer text-left px-3 py-1 bg-slate-50/100 w-[150px] transition-all duration-500 ease-in-out">
                   <p className="hover:text-primary">
-                    <Link to={"/profile"}>
-                      Tài khoản của bạn
-                    
-                    </Link>
+                    <Link to={"/profile"}>Tài khoản của bạn</Link>
                   </p>
                   <Link className="hover:text-primary" to={"/bill"}>
                     Đơn mua
                   </Link>
-                  <p className="hover:text-primary " onClick={()=>handleOnclickDX()}>
+                  <p
+                    className="hover:text-primary "
+                    onClick={() => handleOnclickDX()}
+                  >
                     Đăng xuất
                   </p>
                 </div>
-                :
+              ) : (
                 <div className="absolute text-sm whitespace-nowrap right-[-30px] hidden group-hover:block group-hover:text-primary">
-                  <p>
-                    Đăng nhập
-                  </p>
+                  <p>Đăng nhập</p>
                 </div>
-                }
+              )}
             </li>
             <li className="list-none text-xl font-bold hover:text-primary relative group text-center">
               <Link to="/cartshopping">
@@ -124,7 +145,10 @@ function Header() {
         <ul className="hidden text-center items-center gap-x-20  text-white font-Montserrat justify-center lg:flex">
           {titles_1.map((title_1, index) => {
             return (
-              <li key={index} className="hover:text-yellow-300 transition-all duration-500">
+              <li
+                key={index}
+                className="hover:text-yellow-300 transition-all duration-500"
+              >
                 <Link to={`/catalog/${title_1.link}`}>{title_1.title}</Link>
               </li>
             );

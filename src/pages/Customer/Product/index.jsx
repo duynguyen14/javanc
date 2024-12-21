@@ -61,7 +61,7 @@ function Product() {
             }
         }
     }
-    console.log("Kiểu dữ liệu :",typeof(user.id));
+    // console.log("Kiểu dữ liệu :",typeof(user.id));
     return ( 
         <div className="test bg-white pt-10 font-Montserrat">
             {/* Product {id} */}

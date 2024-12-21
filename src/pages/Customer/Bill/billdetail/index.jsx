@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams,Link } from "react-router-dom";
 import { request } from "../../../../utils";
+import { sum } from "lodash";
 
 function Billdetail() {
   const user = JSON.parse(localStorage.getItem("user"));
   const navigate = useNavigate();
   const { billID } = useParams();
   const [billdetail, setBilldetail] = useState([]);
+  const [total,setTotal]=useState(0);
   useEffect(() => {
     const fetch = async () => {
       if (user) {
@@ -14,6 +16,7 @@ function Billdetail() {
           const response = await request.get(`billdetail/${user.id}/${billID}`);
           console.log(response.data);
           setBilldetail(response.data);
+          Total();
         } catch (error) {
           console.log("Lỗi", error);
         }
@@ -23,7 +26,17 @@ function Billdetail() {
       }
     };
     fetch();
+    // Total();
   }, []);
+  useEffect(() => {
+    if (billdetail.length > 0) {
+      let sum = 0;
+      billdetail.forEach((item) => {
+        sum += item.billDetail.quantity * item.billDetail.total;
+      });
+      setTotal(sum);
+    }
+  }, [billdetail]); // Chỉ chạy khi `billdetail` thay đổi
   const handleOnclickCancel=async()=>{
     if(window.confirm("Bạn xác nhận hủy đơn hàng này")){
         try{
@@ -39,6 +52,7 @@ function Billdetail() {
 
     }
   }
+  // Total();
   return (
     <div className="test">
       {user ? (
@@ -111,11 +125,12 @@ function Billdetail() {
               </table>
             </div>
 
-            {/* // <div className="mt-4">
-            //   <h3 className="text-xl font-semibold">
-            //     Tổng tiền: {billdetail.totalAmount.toLocaleString()} VND
-            //   </h3>
-            // </div> */}
+            <div className="mt-4">
+            <h3 className="text-xl font-semibold text-right text-red-500">
+            Tổng tiền: {total} VND
+            {/* hello */}
+            </h3>
+          </div>
           </div>
         </div>
       ) : (

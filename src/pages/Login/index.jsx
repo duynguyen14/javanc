@@ -30,7 +30,8 @@ function Login() {
         password:user.password
       })
       // console.log(response.data)
-      if(response.status==200){
+      console.log(response.status)
+      // if(response.status==200){
         alert("Đăng nhập thành công")
         if(response.data.account.role=="admin"){
           navigate("/admin/home")
@@ -39,15 +40,12 @@ function Login() {
           navigate("/")
         }
         localStorage.setItem("user",JSON.stringify(response.data.user));
-      }
-      else if(response.status==400 || response.status==404){
-        setShowmessage(true)
-      }
-      else{
-        alert("Có lỗi xảy ra vui lòng thử lại")
-      }
+      // }
     }
     catch(error){
+      if(error.status==404 || error.status==400){
+        setShowmessage(true);
+      }
       console.log(error)
     }
   };
